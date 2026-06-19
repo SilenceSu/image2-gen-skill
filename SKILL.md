@@ -1,6 +1,6 @@
 ---
 name: image2-gen-skill
-description: Generate images from text prompts and edit/generate images from reference images through an OpenAI-compatible image API. Use when Codex needs to call text-to-image `/v1/images/generations`, image-edit `/v1/images/edits`, save returned image URLs or base64 images, time image API calls, or automate the workflows shown in the bundled HTML test pages.
+description: Generate images from text prompts and edit/generate images from reference images through a gpt-image-2 OpenAI-compatible image API. Use when the user asks to 生图, 生成图片, 生成一张图, 画图, 文生图, text-to-image, image generation, 图生图, 改图, 修图, 图片编辑, image-to-image, or edit a reference image. Use when Codex needs to call text-to-image `/v1/images/generations`, image-edit `/v1/images/edits`, save returned image URLs or base64 images, time image API calls, or automate the workflows shown in the bundled HTML test pages.
 ---
 
 # Image2 Gen Skill
@@ -13,7 +13,7 @@ Use this skill to create images from text or create edited images from a referen
    - Preferred config: `{"baseurl":"https://your-image-api.example.com/v1","token":"<api-token>","model":"gpt-image-2"}`
    - `baseurl` includes the API version prefix, for example `/v1`. The scripts append `/images/generations` or `/images/edits`.
    - `token` is used as `Authorization: Bearer <token>`.
-   - `model` is optional. It defaults to `gpt-image-2` when omitted.
+   - `model` is optional. It defaults to `gpt-image-2` when omitted. The scripts only support `gpt-image-2`.
    - `--baseurl`, `--endpoint`, and `--api-key`/`--token` can override config values for one run.
 2. Resolve the image model: command-line `--model`, then config `model`, then `gpt-image-2`.
 3. For image editing, check that the input image exists and is a PNG, JPEG, or WebP file.
@@ -44,7 +44,6 @@ Defaults:
 - Endpoint: `<baseurl>/images/generations`
 - Size: `1024x1024`
 - Count: `1`
-- Response format: `url`
 - Output directory: `image2_outputs/`
 
 Useful options:
@@ -57,8 +56,9 @@ python scripts/generate_image.py \
   --prompt "<prompt>" \
   --size 1536x1024 \
   --count 1 \
-  --response-format b64_json \
-  --extra-json '{"quality":"high","style":"vivid"}' \
+  --quality high \
+  --background auto \
+  --output-format png \
   --output-dir image2_outputs
 ```
 
@@ -73,8 +73,8 @@ python scripts/edit_image.py --prompt "<prompt>" --image <path-to-image>
 Defaults:
 
 - Endpoint: `<baseurl>/images/edits`
-- Multipart image field: `image`
-- Size: `1024x1024`
+- Multipart image field: `image[]`
+- Size: `auto`
 - Count: `1`
 - Output directory: `image2_outputs/`
 
@@ -87,10 +87,11 @@ python scripts/edit_image.py \
   --model <model> \
   --prompt "<prompt>" \
   --image reference.png \
-  --image-field-name image \
   --size 1024x1536 \
   --count 1 \
-  --extra-json '{"quality":"high","response_format":"url"}' \
+  --quality high \
+  --background auto \
+  --output-format png \
   --output-dir image2_outputs
 ```
 
@@ -99,12 +100,12 @@ python scripts/edit_image.py \
 Text-to-image sends JSON:
 
 - Headers: `Authorization: Bearer <key>`, `Content-Type: application/json`
-- Body: `model`, `prompt`, `size`, `n`, `response_format`, plus any `--extra-json` keys.
+- Body: `model`, `prompt`, `size`, `n`, `quality`, `background`, `output_format`, `moderation`, optional `output_compression`, optional `user`.
 
 Image edit sends `multipart/form-data`:
 
 - Headers: `Authorization: Bearer <key>`
-- Fields: `<image-field-name>`, `model`, `prompt`, `size`, `n`, plus any `--extra-json` keys.
+- Fields: `image[]`, optional `mask`, `model`, `prompt`, `size`, `n`, `quality`, `background`, `output_format`, `moderation`, optional `output_compression`, optional `user`.
 
 Both scripts accept responses containing `data[].url` or `data[].b64_json`. They save images, save `response.json`, and print elapsed time.
 
