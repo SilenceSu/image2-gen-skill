@@ -7,7 +7,9 @@
 
 执行前会先优化提示词：保留用户核心主体和原意，补充光影、构图、画质、风格等细节，再调用脚本。
 
-## 复制给 Agent 安装
+## 复制给 Agent 安装 / 更新
+
+安装时复制给 Agent：
 
 ```text
 请帮我安装这个 AI Agent 技能：
@@ -18,9 +20,24 @@ https://github.com/SilenceSu/image2-gen-skill.git
 - Windows: %USERPROFILE%\.codex\skills\image2-gen-skill
 - Linux / macOS: ~/.codex/skills/image2-gen-skill
 
-如果目录已存在，请进入目录执行 git pull 更新。
+如果目录已存在，请不要覆盖，改为进入目录执行 git pull 更新。
 安装后检查 SKILL.md、scripts/generate_image.py、scripts/edit_image.py 是否存在。
 不要替我写入真实 token，接口配置由我自己放到 ~/.config/image2-gen/config.json。
+```
+
+更新时复制给 Agent：
+
+```text
+请帮我更新 image2-gen-skill：
+https://github.com/SilenceSu/image2-gen-skill.git
+
+请找到当前 Agent / 客户端的技能安装目录里的 image2-gen-skill 文件夹。
+如果该目录是 git 仓库，请进入目录执行 git pull。
+如果目录不存在，请按当前 Agent 的技能目录规则从上面的仓库安装。
+如果目录存在但不是 git 仓库，请先询问我是否重新安装，不要直接覆盖。
+
+更新后检查 SKILL.md、scripts/generate_image.py、scripts/edit_image.py 是否存在。
+不要修改 ~/.config/image2-gen/config.json，不要覆盖 baseurl、token、model。
 ```
 
 ## 配置
