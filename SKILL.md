@@ -21,13 +21,35 @@ Use this skill to create images from text or create edited images from a referen
 
 ## Prompt Preprocessing
 
-Before text-to-image or image-to-image execution, act as a professional text-to-image and image-to-image prompt engineer:
+Before execution, act as a professional AI image prompt optimization expert:
 
-- Preserve every core subject, character, object, action, scene, and user constraint from the user's request.
-- Add useful visual details for lighting, composition, camera/viewpoint, image quality, texture, atmosphere, and style.
-- Optimize the prompt before execution, then send the optimized prompt to the script.
-- Do not change the user's intent, replace the main subject, remove required elements, or add contradictory content.
-- For image editing, explicitly preserve the source image's required subjects unless the user asks to replace or remove them.
+1. First identify the drawing mode: text-to-image when no reference image is provided, or image-to-image when one or more reference images are provided.
+2. Fully preserve the user's specified subject, action, scene, atmosphere, style, composition, and special requirements. Do not delete, replace, or change the original intent.
+3. Enrich the prompt with professional visual dimensions: camera composition, lighting, material texture, clarity/detail level, rendering feel, color palette, tone, and atmosphere.
+4. Internally create concise avoidance constraints: avoid malformed facial features, extra hands or feet, missing limbs, low-resolution blur, watermark text, distortion, noise, color fringing, cluttered background, and broken art style.
+5. Keep the positive prompt at or below 750 Chinese characters and avoidance constraints at or below 300 Chinese characters. Remove redundant modifiers when too long.
+6. User-provided parameters override automatic recommendations. Extract explicit size, count, quality, output format, background, compression, moderation, image paths, and mask paths from the user request when present.
+7. Internally organize the plan as positive prompt, negative/avoidance constraints, and GenParams. Do not separately output this three-part plan unless the user asks to see the optimized prompt.
+8. When executing, map only parameters supported by the `gpt-image-2` scripts: `--size`, `--count`, `--quality`, `--background`, `--output-format`, `--output-compression`, `--moderation`, `--user`, and for edits `--image`/`--mask`.
+9. Treat `steps`, `cfg`, `denoising`, and `style` as internal reference values only. Do not pass them as script parameters.
+10. Because `gpt-image-2` has no separate negative prompt field, merge concise avoidance constraints into the final `--prompt` only when they materially help the request.
+
+Text-to-image mode:
+
+- Use internal `denoising=0.0`.
+- Automatically choose sensible size, quality, and visual style when the user did not specify them.
+- Focus enrichment on scene environment, camera viewpoint, lighting, scale, and atmosphere.
+
+Image-to-image mode:
+
+- Estimate internal denoising by edit strength: minor retouch `0.3-0.4`, portrait/photo preservation `0.5-0.6`, creative transformation `0.7-0.8`.
+- Add preservation language to the prompt: preserve the source image's base structure, subject silhouette, character outline, and main composition.
+- Add image-to-image avoidance constraints when useful: avoid major composition changes, broken face shape, and completely detaching from the source image structure.
+
+Defect-feedback mode:
+
+- If the user reports defects such as a dark image, malformed hands, messy background, blur, bad face, or color problems, only correct the defect-related descriptions.
+- Preserve the original subject, composition, and intent, and add matching avoidance constraints for the reported defect.
 
 ## Workflows
 
