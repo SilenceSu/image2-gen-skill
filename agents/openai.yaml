@@ -1,0 +1,4 @@
+interface:
+  display_name: "Image2 Gen Skill"
+  short_description: "生图、文生图、图生图与改图接口自动化"
+  default_prompt: "使用 $image2-gen-skill 生图、生成图片、文生图、图生图或改图。"
